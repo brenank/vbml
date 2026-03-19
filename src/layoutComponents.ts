@@ -4,6 +4,9 @@ export const layoutComponents = (
   absoluteComponents: { characters: number[][]; x: number; y: number }[],
   calendarComponents?: { characters: number[][]; x: number }[]
 ) => {
+  const boardHeight = board.length;
+  const boardWidth = board[0]?.length ?? 0;
+
   let position = {
     top: 0,
     left: 0,
@@ -12,13 +15,20 @@ export const layoutComponents = (
 
   components.forEach((component) => {
     // If the component size plus the currently occupied size is larger than the board width, flow to the next line
-    const newLine = position.left + component[0].length > board[0].length;
+    const newLine = position.left + component[0].length > boardWidth;
     const left = newLine ? 0 : position.left;
     const top = newLine ? position.top + position.height : position.top;
 
     // Fill in the individual component bits over the empty board
     component.forEach((row, rowIndex) => {
       row.forEach((bit, bitIndex) => {
+        // Ignore overflow writes so flowed rows stay within the board shape.
+        if (rowIndex + top >= boardHeight) {
+          return;
+        }
+        if (bitIndex + left >= boardWidth) {
+          return;
+        }
         board[rowIndex + top][bitIndex + left] = bit;
       });
     });
