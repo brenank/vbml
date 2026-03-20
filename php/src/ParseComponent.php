@@ -36,12 +36,7 @@ class ParseComponent
             $align   = $component['style']['align']   ?? 'top';
             $justify = $component['style']['justify'] ?? 'left';
 
-            // Pipeline
-            $result = EmojisToCharacterCodes::convert($template);
-            $result = ParseProps::parse($props ?? [], $result);
-            $result = SanitizeSpecialCharacters::sanitize($result);
-            $words  = SplitWords::split($width, $result);
-            $lines  = GetLinesFromWords::getLines($width, $words);
+            $lines  = TemplateParts::resolveTemplateLines($width, $props ?? [], $template);
             $coded  = array_map([CharacterCode::class, 'convertCharactersToCharacterCodes'], $lines);
             $vAligned = VerticalAlign::align($height, $align, $coded);
             $hAligned = HorizontalAlign::align($width, $justify, $vAligned);

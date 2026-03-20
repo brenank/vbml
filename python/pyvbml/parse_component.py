@@ -7,14 +7,10 @@ from __future__ import annotations
 
 from .character_codes import COLOR_CODES, convert_characters_to_character_codes
 from .create_empty_board import create_empty_board
-from .emojis_to_character_codes import emojis_to_character_codes
-from .get_lines_from_words import get_lines_from_words
 from .horizontal_align import horizontal_align
-from .parse_props import parse_props
 from .random_colors import random_colors
 from .render_component import render_component
-from .sanitize_special_characters import sanitize_special_characters
-from .split_words import split_words
+from .template_parts import resolve_template_lines
 from .types import Align, IVBMLComponent, Justify, VBMLProps
 from .vertical_align import vertical_align
 
@@ -42,12 +38,7 @@ def parse_component(
     justify = style.get("justify") or Justify.LEFT
     align = style.get("align") or Align.TOP
 
-    # Pipeline mirrors the lodash `pipe` call in the TS source
-    text = emojis_to_character_codes(template)
-    text = parse_props(props, text)
-    text = sanitize_special_characters(text)
-    words = split_words(width, text)
-    lines = get_lines_from_words(width, words)
+    lines = resolve_template_lines(width, props, template)
     codes = [convert_characters_to_character_codes(line) for line in lines]
     codes = vertical_align(height, align, codes)
     codes = horizontal_align(width, justify, codes)

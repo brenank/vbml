@@ -22,11 +22,7 @@ func ParseComponent(defaultHeight, defaultWidth int, props map[string]any, compo
 		}
 	}
 
-	text := emojisToCharacterCodes(template)
-	text = parseProps(props, text)
-	text = SanitizeSpecialCharacters(text)
-	words := splitWords(width, text)
-	lines := getLinesFromWords(width, words)
+	lines := resolveTemplateLines(width, props, template)
 
 	codes := make(Board, 0, len(lines))
 	for _, line := range lines {

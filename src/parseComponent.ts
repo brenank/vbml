@@ -3,15 +3,11 @@ import { colorCodes, randomColors } from "./randomColors";
 
 import { convertCharactersToCharacterCodes } from "./characterCodes";
 import { createEmptyBoard } from "./createEmptyBoard";
-import { emojisToCharacterCodes } from "./emojisToCharacterCodes";
-import { getLinesFromWords } from "./getLinesFromWords";
 import { horizontalAlign } from "./horizontalAlign";
 import map from "lodash/fp/map";
-import { parseProps } from "./parseProps";
 import pipe from "lodash/fp/pipe";
 import { renderComponent } from "./renderComponent";
-import { sanitizeSpecialCharacters } from "./sanitizeSpecialCharacters";
-import { splitWords } from "./splitWords";
+import { resolveTemplateLines } from "./templateParts";
 import { verticalAlign } from "./verticalAlign";
 
 export const parseComponent =
@@ -36,11 +32,7 @@ export const parseComponent =
     const template = "template" in component ? component.template : "";
 
     return pipe(
-      emojisToCharacterCodes,
-      parseProps(props || {}),
-      sanitizeSpecialCharacters,
-      splitWords(width),
-      getLinesFromWords(width),
+      (template: string) => resolveTemplateLines(width, props || {}, template),
       map(convertCharactersToCharacterCodes),
       verticalAlign(height, component?.style?.align || Align.top),
       horizontalAlign(width, component?.style?.justify || Justify.left),
