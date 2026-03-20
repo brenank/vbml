@@ -97,6 +97,19 @@ func buildValidCharacterCodes(entries []characterCodeEntry) map[int]struct{} {
 	for _, entry := range entries {
 		valid[int(entry.code)] = struct{}{}
 	}
+	for _, code := range []int{
+		int(CharacterCodeRed),
+		int(CharacterCodeOrange),
+		int(CharacterCodeYellow),
+		int(CharacterCodeGreen),
+		int(CharacterCodeBlue),
+		int(CharacterCodeViolet),
+		int(CharacterCodeWhite),
+		int(CharacterCodeBlack),
+		int(CharacterCodeFilled),
+	} {
+		valid[code] = struct{}{}
+	}
 	return valid
 }
 
