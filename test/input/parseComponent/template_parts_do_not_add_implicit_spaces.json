@@ -1,0 +1,14 @@
+{
+  "height": 1,
+  "width": 4,
+  "component": {
+    "template": [
+      {
+        "template": "AB"
+      },
+      {
+        "template": "CD"
+      }
+    ]
+  }
+}

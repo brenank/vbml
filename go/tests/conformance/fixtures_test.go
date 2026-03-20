@@ -1,6 +1,7 @@
 package conformance
 
 import (
+	"encoding/json"
 	"strconv"
 
 	vbml "github.com/Vestaboard/vbml/go"
@@ -38,8 +39,13 @@ type fixtureBoardStyle struct {
 	Width  int `json:"width"`
 }
 
+type fixtureTemplatePart struct {
+	Template string `json:"template"`
+	Wrap     string `json:"wrap"`
+}
+
 type fixtureComponent struct {
-	Template      string                   `json:"template"`
+	Template      json.RawMessage          `json:"template"`
 	RawCharacters vbml.Board               `json:"rawCharacters"`
 	Calendar      *fixtureCalendarData     `json:"calendar"`
 	RandomColors  *fixtureRandomColorsData `json:"randomColors"`
@@ -84,11 +90,17 @@ func (fixture fixtureCalendarData) toRuntime() (vbml.CalendarData, error) {
 
 func (fixture fixtureComponent) toRuntime() (vbml.Component, error) {
 	component := vbml.Component{
-		Template:      fixture.Template,
 		RawCharacters: fixture.RawCharacters,
 		RandomColors:  nil,
 		Style:         nil,
 	}
+
+	template, templateParts, err := fixtureTemplateToRuntime(fixture.Template)
+	if err != nil {
+		return vbml.Component{}, err
+	}
+	component.Template = template
+	component.TemplateParts = templateParts
 
 	if fixture.RandomColors != nil {
 		component.RandomColors = &vbml.RandomColorsData{Colors: fixture.RandomColors.Colors}
@@ -117,6 +129,31 @@ func (fixture fixtureComponent) toRuntime() (vbml.Component, error) {
 	}
 
 	return component, nil
+}
+
+func fixtureTemplateToRuntime(raw json.RawMessage) (string, []vbml.TemplatePart, error) {
+	if len(raw) == 0 || string(raw) == "null" {
+		return "", nil, nil
+	}
+
+	var template string
+	if err := json.Unmarshal(raw, &template); err == nil {
+		return template, nil, nil
+	}
+
+	var fixtureParts []fixtureTemplatePart
+	if err := json.Unmarshal(raw, &fixtureParts); err == nil {
+		parts := make([]vbml.TemplatePart, 0, len(fixtureParts))
+		for _, part := range fixtureParts {
+			parts = append(parts, vbml.TemplatePart{
+				Template: part.Template,
+				Wrap:     vbml.TemplateWrap(part.Wrap),
+			})
+		}
+		return "", parts, nil
+	}
+
+	return "", nil, json.Unmarshal(raw, &template)
 }
 
 func (fixture fixtureInput) toRuntime() (vbml.Input, error) {

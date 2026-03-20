@@ -6,7 +6,7 @@ Port of Vestaboard/vbml/src/types.ts
 from __future__ import annotations
 
 import sys
-from typing import Any, TypedDict
+from typing import Any, Literal, NotRequired, TypeAlias, TypedDict
 
 if sys.version_info >= (3, 11):
     from enum import StrEnum
@@ -59,6 +59,17 @@ class VBMLStyle(TypedDict, total=False):
 
 # VBMLProps is an open dict
 VBMLProps = dict[str, Any]
+TemplateWrap: TypeAlias = Literal["normal", "never"]
+
+
+class IVBMLTemplatePart(TypedDict):
+    """A template part with optional atomic wrapping."""
+
+    template: str
+    wrap: NotRequired[TemplateWrap]
+
+
+TemplateValue: TypeAlias = str | list[IVBMLTemplatePart]
 
 
 class CalendarData(TypedDict, total=False):
@@ -82,7 +93,7 @@ class RandomColorsData(TypedDict, total=False):
 class IVBMLComponent(TypedDict, total=False):
     """VBML component interface."""
 
-    template: str
+    template: TemplateValue
     rawCharacters: list[list[int]]
     calendar: CalendarData
     randomColors: RandomColorsData

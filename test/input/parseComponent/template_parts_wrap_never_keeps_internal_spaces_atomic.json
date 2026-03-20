@@ -1,0 +1,15 @@
+{
+  "height": 2,
+  "width": 8,
+  "component": {
+    "template": [
+      {
+        "template": "WXYZ"
+      },
+      {
+        "template": "12 34",
+        "wrap": "never"
+      }
+    ]
+  }
+}

@@ -102,62 +102,75 @@ const (
 )
 
 type BoardStyle struct {
-	Height int
-	Width  int
+	Height int `json:"height,omitempty"`
+	Width  int `json:"width,omitempty"`
 }
 
 type AbsolutePosition struct {
-	X int
-	Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 type ComponentStyle struct {
-	Justify          Justify
-	Align            Align
-	Height           int
-	Width            int
-	AbsolutePosition *AbsolutePosition
+	Justify          Justify           `json:"justify,omitempty"`
+	Align            Align             `json:"align,omitempty"`
+	Height           int               `json:"height,omitempty"`
+	Width            int               `json:"width,omitempty"`
+	AbsolutePosition *AbsolutePosition `json:"absolutePosition,omitempty"`
 }
 
 type CalendarData struct {
-	Month           int
-	Year            int
-	DefaultDayColor int
-	Days            map[int]int
-	HideSMTWTFS     bool
-	HideDates       bool
-	HideMonthYear   bool
+	Month           int         `json:"month,omitempty"`
+	Year            int         `json:"year,omitempty"`
+	DefaultDayColor int         `json:"defaultDayColor,omitempty"`
+	Days            map[int]int `json:"days,omitempty"`
+	HideSMTWTFS     bool        `json:"hideSMTWTFS,omitempty"`
+	HideDates       bool        `json:"hideDates,omitempty"`
+	HideMonthYear   bool        `json:"hideMonthYear,omitempty"`
 }
 
 type RandomColorsData struct {
-	Colors []int
+	Colors []int `json:"colors,omitempty"`
+}
+
+type TemplateWrap string
+
+const (
+	TemplateWrapNormal TemplateWrap = "normal"
+	TemplateWrapNever  TemplateWrap = "never"
+)
+
+type TemplatePart struct {
+	Template string       `json:"template"`
+	Wrap     TemplateWrap `json:"wrap,omitempty"`
 }
 
 type Component struct {
-	Template      string
-	RawCharacters Board
-	Calendar      *CalendarData
-	RandomColors  *RandomColorsData
-	Style         *ComponentStyle
+	Template      string            `json:"template,omitempty"`
+	TemplateParts []TemplatePart    `json:"-"`
+	RawCharacters Board             `json:"rawCharacters,omitempty"`
+	Calendar      *CalendarData     `json:"calendar,omitempty"`
+	RandomColors  *RandomColorsData `json:"randomColors,omitempty"`
+	Style         *ComponentStyle   `json:"style,omitempty"`
 }
 
 type Input struct {
-	Props      map[string]any
-	Style      *BoardStyle
-	Components []Component
+	Props      map[string]any `json:"props,omitempty"`
+	Style      *BoardStyle    `json:"style,omitempty"`
+	Components []Component    `json:"components"`
 }
 
 type AbsoluteComponent struct {
-	Characters Board
-	X          int
-	Y          int
+	Characters Board `json:"characters"`
+	X          int   `json:"x"`
+	Y          int   `json:"y"`
 }
 
 type CharacterCodesToStringOptions struct {
-	AllowLineBreaks bool
+	AllowLineBreaks bool `json:"allowLineBreaks,omitempty"`
 }
 
 type ClassicOptions struct {
-	ExtraHPadding        int
-	PreserveDoubleSpaces bool
+	ExtraHPadding        int  `json:"extraHPadding,omitempty"`
+	PreserveDoubleSpaces bool `json:"preserveDoubleSpaces,omitempty"`
 }

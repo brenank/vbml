@@ -1,0 +1,11 @@
+{
+  "height": 1,
+  "width": 12,
+  "component": {
+    "template": [
+      {
+        "template": "Hello World!"
+      }
+    ]
+  }
+}

@@ -1,12 +1,14 @@
-import { VBMLProps } from "./types";
+import {
+  IVBMLTemplatePart,
+  TemplateWrap,
+  VBMLProps,
+} from "./types";
 
 import { emojisToCharacterCodes } from "./emojisToCharacterCodes";
 import { parseProps } from "./parseProps";
 import { sanitizeSpecialCharacters } from "./sanitizeSpecialCharacters";
 
-type TemplateWrap = "normal" | "never";
-
-interface TemplatePart {
+interface ResolvedTemplatePart {
   template: string;
   wrap: TemplateWrap;
 }
@@ -41,17 +43,32 @@ interface LineState {
 
 const SPACE_CELL = "{0}";
 
-const normalizeLegacyTemplate = (template: string): TemplatePart[] => [
-  {
-    template,
-    wrap: "normal",
-  },
-];
+const normalizeTemplatePart = (
+  part: IVBMLTemplatePart
+): ResolvedTemplatePart => ({
+  template: part.template,
+  wrap: part.wrap === "never" ? "never" : "normal",
+});
+
+const normalizeTemplate = (
+  template: string | IVBMLTemplatePart[] | undefined
+): ResolvedTemplatePart[] => {
+  if (Array.isArray(template)) {
+    return template.map(normalizeTemplatePart);
+  }
+
+  return [
+    {
+      template: template || "",
+      wrap: "normal",
+    },
+  ];
+};
 
 const preprocessTemplatePart = (
   props: VBMLProps,
-  part: TemplatePart
-): TemplatePart => ({
+  part: ResolvedTemplatePart
+): ResolvedTemplatePart => ({
   ...part,
   template: sanitizeSpecialCharacters(
     parseProps(props, emojisToCharacterCodes(part.template))
@@ -98,7 +115,7 @@ const createWordToken = (segments: InlineSegment[]): TemplateWordToken => ({
   segments,
 });
 
-const buildTemplateTokens = (parts: TemplatePart[]): TemplateToken[] => {
+const buildTemplateTokens = (parts: ResolvedTemplatePart[]): TemplateToken[] => {
   const tokens: TemplateToken[] = [];
   let currentSegments: InlineSegment[] = [];
 
@@ -405,9 +422,9 @@ const wrapTemplateTokens = (width: number, tokens: TemplateToken[]): string[] =>
 export const resolveTemplateLines = (
   width: number,
   props: VBMLProps,
-  template: string
+  template: string | IVBMLTemplatePart[] | undefined
 ): string[] => {
-  const parts = normalizeLegacyTemplate(template).map((part) =>
+  const parts = normalizeTemplate(template).map((part) =>
     preprocessTemplatePart(props, part)
   );
 

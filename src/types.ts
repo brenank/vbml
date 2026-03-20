@@ -35,6 +35,13 @@ export interface VBMLProps {
   [key: string]: any;
 }
 
+export type TemplateWrap = "normal" | "never";
+
+export interface IVBMLTemplatePart {
+  template: string;
+  wrap?: TemplateWrap;
+}
+
 export interface IVBMLRawComponent {
   style?: IComponentStyle;
   rawCharacters?: number[][];
@@ -54,7 +61,7 @@ export interface IVBMLCalendarComponent {
 }
 
 export interface IVBMLTemplateComponent {
-  template: string;
+  template?: string | IVBMLTemplatePart[];
   style?: IComponentStyle;
 }
 

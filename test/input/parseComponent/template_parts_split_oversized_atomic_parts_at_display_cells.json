@@ -1,0 +1,12 @@
+{
+  "height": 2,
+  "width": 4,
+  "component": {
+    "template": [
+      {
+        "template": "1{59}10{53}",
+        "wrap": "never"
+      }
+    ]
+  }
+}

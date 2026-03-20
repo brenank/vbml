@@ -1,0 +1,14 @@
+{
+  "height": 1,
+  "width": 8,
+  "component": {
+    "template": [
+      {
+        "template": "Hi "
+      },
+      {
+        "template": "there"
+      }
+    ]
+  }
+}

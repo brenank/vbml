@@ -12,22 +12,39 @@ class TemplateParts
     public static function resolveTemplateLines(
         int $width,
         array $props,
-        string $template
+        mixed $template
     ): array {
         $parts = array_map(
             fn(array $part) => self::preprocessTemplatePart($props, $part),
-            self::normalizeLegacyTemplate($template)
+            self::normalizeTemplate($template)
         );
 
         return self::wrapTemplateTokens($width, self::buildTemplateTokens($parts));
     }
 
-    private static function normalizeLegacyTemplate(string $template): array
+    private static function normalizeTemplate(mixed $template): array
     {
+        if (is_array($template)) {
+            return array_map(
+                fn(array $part) => self::normalizeTemplatePart($part),
+                $template
+            );
+        }
+
         return [[
-            'template' => $template,
+            'template' => is_string($template) ? $template : '',
             'wrap' => 'normal',
         ]];
+    }
+
+    private static function normalizeTemplatePart(array $part): array
+    {
+        return [
+            'template' => is_string($part['template'] ?? null)
+                ? $part['template']
+                : '',
+            'wrap' => ($part['wrap'] ?? null) === 'never' ? 'never' : 'normal',
+        ];
     }
 
     private static function preprocessTemplatePart(array $props, array $part): array

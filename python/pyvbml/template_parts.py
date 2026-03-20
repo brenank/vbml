@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from .emojis_to_character_codes import emojis_to_character_codes
 from .parse_props import parse_props
 from .sanitize_special_characters import sanitize_special_characters
-from .types import VBMLProps
+from .types import IVBMLTemplatePart, TemplateValue, TemplateWrap, VBMLProps
 
 SPACE_CELL = "{0}"
 
@@ -17,7 +17,7 @@ class TemplatePart:
     """A normalized template part."""
 
     template: str
-    wrap: str
+    wrap: TemplateWrap
 
 
 @dataclass
@@ -44,8 +44,18 @@ class LineState:
     length: int
 
 
-def _normalize_legacy_template(template: str) -> list[TemplatePart]:
-    return [TemplatePart(template=template, wrap="normal")]
+def _normalize_template_part(part: IVBMLTemplatePart) -> TemplatePart:
+    return TemplatePart(
+        template=part["template"],
+        wrap="never" if part.get("wrap") == "never" else "normal",
+    )
+
+
+def _normalize_template_value(template: TemplateValue | None) -> list[TemplatePart]:
+    if isinstance(template, list):
+        return [_normalize_template_part(part) for part in template]
+
+    return [TemplatePart(template=template or "", wrap="normal")]
 
 
 def _preprocess_template_part(props: VBMLProps, part: TemplatePart) -> TemplatePart:
@@ -316,11 +326,15 @@ def _wrap_template_tokens(width: int, tokens: list[TemplateToken]) -> list[str]:
     return [line.line for line in lines]
 
 
-def resolve_template_lines(width: int, props: VBMLProps, template: str) -> list[str]:
-    """Resolve a legacy template string into wrapped lines."""
+def resolve_template_lines(
+    width: int,
+    props: VBMLProps,
+    template: TemplateValue | None,
+) -> list[str]:
+    """Resolve string or template-part input into wrapped lines."""
 
     parts = [
         _preprocess_template_part(props, part)
-        for part in _normalize_legacy_template(template)
+        for part in _normalize_template_value(template)
     ]
     return _wrap_template_tokens(width, _build_template_tokens(parts))

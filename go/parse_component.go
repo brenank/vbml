@@ -10,7 +10,6 @@ func ParseComponent(defaultHeight, defaultWidth int, props map[string]any, compo
 		return randomColors(height, width, component.RandomColors.Colors), nil
 	}
 
-	template := component.Template
 	justify := JustifyLeft
 	align := AlignTop
 	if component.Style != nil {
@@ -22,7 +21,10 @@ func ParseComponent(defaultHeight, defaultWidth int, props map[string]any, compo
 		}
 	}
 
-	lines := resolveTemplateLines(width, props, template)
+	lines, err := resolveComponentTemplateLines(width, props, component)
+	if err != nil {
+		return nil, err
+	}
 
 	codes := make(Board, 0, len(lines))
 	for _, line := range lines {

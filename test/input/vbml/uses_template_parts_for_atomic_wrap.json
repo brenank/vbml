@@ -1,0 +1,23 @@
+{
+  "style": {
+    "width": 5,
+    "height": 2
+  },
+  "components": [
+    {
+      "style": {
+        "width": 5,
+        "height": 2
+      },
+      "template": [
+        {
+          "template": "A"
+        },
+        {
+          "template": "1{59}10{53}",
+          "wrap": "never"
+        }
+      ]
+    }
+  ]
+}

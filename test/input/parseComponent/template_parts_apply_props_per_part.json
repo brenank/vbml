@@ -1,0 +1,19 @@
+{
+  "height": 1,
+  "width": 5,
+  "props": {
+    "greeting": "Hi",
+    "target": "AB"
+  },
+  "component": {
+    "template": [
+      {
+        "template": "{{greeting}} "
+      },
+      {
+        "template": "{{target}}",
+        "wrap": "never"
+      }
+    ]
+  }
+}

@@ -31,7 +31,7 @@ class ParseComponent
             }
 
             $emptyComponent = CreateEmptyBoard::create($height, $width);
-            $template = $component['template'] ?? '';
+            $template = $component['template'] ?? null;
 
             $align   = $component['style']['align']   ?? 'top';
             $justify = $component['style']['justify'] ?? 'left';

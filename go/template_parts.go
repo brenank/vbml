@@ -1,19 +1,14 @@
 package vbml
 
-import "strings"
-
-type templateWrap string
-
-const (
-	templateWrapNormal templateWrap = "normal"
-	templateWrapNever  templateWrap = "never"
-	templateSpaceCell               = "{0}"
+import (
+	"errors"
+	"strings"
 )
 
-type normalizedTemplatePart struct {
-	Template string
-	Wrap     templateWrap
-}
+const (
+	errMutuallyExclusiveTemplateSources = "component template and templateParts are mutually exclusive"
+	templateSpaceCell                   = "{0}"
+)
 
 type inlineSegment struct {
 	Atomic bool
@@ -38,8 +33,16 @@ type templateLineState struct {
 	length int
 }
 
-func resolveTemplateLines(width int, props map[string]any, template string) []string {
-	parts := normalizeLegacyTemplate(template)
+func resolveComponentTemplateLines(width int, props map[string]any, component Component) ([]string, error) {
+	parts, err := normalizeComponentTemplate(component)
+	if err != nil {
+		return nil, err
+	}
+
+	return resolveTemplateLines(width, props, parts), nil
+}
+
+func resolveTemplateLines(width int, props map[string]any, parts []TemplatePart) []string {
 	for index, part := range parts {
 		parts[index] = preprocessTemplatePart(props, part)
 	}
@@ -47,19 +50,50 @@ func resolveTemplateLines(width int, props map[string]any, template string) []st
 	return wrapTemplateTokens(width, buildTemplateTokens(parts))
 }
 
-func normalizeLegacyTemplate(template string) []normalizedTemplatePart {
-	return []normalizedTemplatePart{{
-		Template: template,
-		Wrap:     templateWrapNormal,
-	}}
+func normalizeComponentTemplate(component Component) ([]TemplatePart, error) {
+	if component.Template != "" && len(component.TemplateParts) > 0 {
+		return nil, errors.New(errMutuallyExclusiveTemplateSources)
+	}
+
+	if len(component.TemplateParts) > 0 {
+		return normalizeTemplateParts(component.TemplateParts), nil
+	}
+
+	return []TemplatePart{{
+		Template: component.Template,
+		Wrap:     TemplateWrapNormal,
+	}}, nil
 }
 
-func preprocessTemplatePart(props map[string]any, part normalizedTemplatePart) normalizedTemplatePart {
-	return normalizedTemplatePart{
+func normalizeTemplateParts(parts []TemplatePart) []TemplatePart {
+	if len(parts) == 0 {
+		return nil
+	}
+
+	normalized := make([]TemplatePart, 0, len(parts))
+	for _, part := range parts {
+		normalized = append(normalized, TemplatePart{
+			Template: part.Template,
+			Wrap:     normalizeTemplateWrap(part.Wrap),
+		})
+	}
+	return normalized
+}
+
+func normalizeTemplateWrap(wrap TemplateWrap) TemplateWrap {
+	if wrap == TemplateWrapNever {
+		return TemplateWrapNever
+	}
+
+	return TemplateWrapNormal
+}
+
+func preprocessTemplatePart(props map[string]any, part TemplatePart) TemplatePart {
+	return TemplatePart{
 		Template: SanitizeSpecialCharacters(
 			parseProps(props, emojisToCharacterCodes(part.Template)),
 		),
-		Wrap: part.Wrap,
+		Wrap: normalizeTemplateWrap(part.Wrap),
 	}
 }
 
@@ -92,7 +126,7 @@ func tokenizeDisplayCells(template string) []string {
 	return cells
 }
 
-func buildTemplateTokens(parts []normalizedTemplatePart) []templateToken {
+func buildTemplateTokens(parts []TemplatePart) []templateToken {
 	var tokens []templateToken
 	var currentSegments []inlineSegment
 
@@ -164,7 +198,7 @@ func buildTemplateTokens(parts []normalizedTemplatePart) []templateToken {
 
 	for _, part := range parts {
 		cells := tokenizeDisplayCells(part.Template)
-		if part.Wrap == templateWrapNever {
+		if normalizeTemplateWrap(part.Wrap) == TemplateWrapNever {
 			appendAtomicCells(cells)
 			continue
 		}
