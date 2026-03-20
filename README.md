@@ -26,6 +26,12 @@ pip install pyvbml
 composer require vestaboard/vbml
 ```
 
+### Go
+
+```bash
+go get github.com/Vestaboard/vbml/go
+```
+
 ## Usage
 
 ### JavaScript / TypeScript
@@ -83,6 +89,37 @@ $characters = Vbml::parse([
         ],
     ],
 ]);
+```
+
+### Go
+
+```go
+package main
+
+import (
+    "log"
+
+    vbml "github.com/Vestaboard/vbml/go"
+)
+
+func main() {
+    characters, err := vbml.Parse(vbml.Input{
+        Components: []vbml.Component{
+            {
+                Style: &vbml.ComponentStyle{
+                    Justify: vbml.JustifyCenter,
+                    Align:   vbml.AlignCenter,
+                },
+                Template: "Hello World!",
+            },
+        },
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    _ = characters
+}
 ```
 
 ## Docs

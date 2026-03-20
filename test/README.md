@@ -18,6 +18,7 @@ The executable runners live outside of `test/`:
 - TypeScript: `src/__tests__/conformance`
 - Python: `python/tests/conformance`
 - PHP: `php/tests/Conformance`
+- Go: `go/tests/conformance`
 
 ## Shared Case Rules
 
@@ -63,3 +64,4 @@ output, such as deep-copy identity.
 - Run Python conformance tests:
   `PYTHONPATH=python pytest python/tests/conformance -q`
 - Run PHP tests: `cd php && ./vendor/bin/phpunit`
+- Run Go tests: `cd go && go test ./...`
