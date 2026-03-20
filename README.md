@@ -29,7 +29,7 @@ composer require vestaboard/vbml
 ### Go
 
 ```bash
-go get github.com/Vestaboard/vbml/go
+go get github.com/brenank/vbml/go
 ```
 
 ## Usage
@@ -99,7 +99,7 @@ package main
 import (
     "log"
 
-    vbml "github.com/Vestaboard/vbml/go"
+    vbml "github.com/brenank/vbml/go"
 )
 
 func main() {

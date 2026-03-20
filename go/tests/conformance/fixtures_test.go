@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
-	vbml "github.com/Vestaboard/vbml/go"
+	vbml "github.com/brenank/vbml/go"
 )
 
 type fixtureAbsolutePosition struct {

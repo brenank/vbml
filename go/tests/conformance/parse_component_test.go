@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	vbml "github.com/Vestaboard/vbml/go"
+	vbml "github.com/brenank/vbml/go"
 )
 
 type parseComponentInput struct {

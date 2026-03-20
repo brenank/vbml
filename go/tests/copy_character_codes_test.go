@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	vbml "github.com/Vestaboard/vbml/go"
+	vbml "github.com/brenank/vbml/go"
 )
 
 func TestCopyCharacterCodes(t *testing.T) {

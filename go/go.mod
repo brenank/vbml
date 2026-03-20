@@ -1,3 +1,3 @@
-module github.com/Vestaboard/vbml/go
+module github.com/brenank/vbml/go
 
 go 1.26.0
